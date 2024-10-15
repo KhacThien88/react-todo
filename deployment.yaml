@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment         # The name of the Kubernetes Deployment
+  labels:
+    app: react-app         # Label to identify the app
+spec:
+  replicas: 2              # Number of pods to be created in the Kubernetes cluster
+  selector:
+    matchLabels:
+      app: react-app       # Selector to match the label for pod assignment
+  template:
+    metadata:
+      labels:
+        app: react-app     # The label to match with the selector
+    spec:
+      containers:
+        - name: react-app  # The name of the React.js application container
+          image: tindev0702/react-todo:latest # Docker image for building the React.js application
+          ports:
+            - containerPort: 3000  # Port on which the React.js application will be exposed
+          resources:
+            requests:              # Resource requests specify the minimum amount of resources the container needs
+              memory: "128Mi"      # Requesting 128Mi of memory
+              cpu: "250m"          # Requesting 250 milliCPU (0.25 CPU)
+            limits:                # Resource limits define the maximum amount of resources the container can use
+              memory: "512Mi"      # Limit of 512Mi of memory
+              cpu: "500m"          # Limit of 500 milliCPU (0.5 CPU)
