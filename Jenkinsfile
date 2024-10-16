@@ -31,10 +31,7 @@ pipeline {
         - name: kubectl
           image: bitnami/kubectl:latest
           imagePullSecrets:
-            - name: regcred
-          args:
-            - -u
-            - root
+          - name: regcred
           command:
             - cat
           tty: true
@@ -83,13 +80,11 @@ pipeline {
     stage('Deploying App to Kubernetes') {
       steps {
         container('kubectl') {
-          script {
-            withCredentials([file(credentialsId: 'kube-config-admin', variable: 'TMPKUBECONFIG')]) {
-              sh "cat \$TMPKUBECONFIG"
-              sh "cp \$TMPKUBECONFIG ~/.kube/config"
-              sh "ls -l \$TMPKUBECONFIG"
-              sh "kubectl apply -f deployment-react.yaml"
-            }
+          withCredentials([file(credentialsId: 'kube-config-admin', variable: 'TMPKUBECONFIG')]) {
+            sh "cat \$TMPKUBECONFIG"
+            sh "cp \$TMPKUBECONFIG ~/.kube/config"
+            sh "ls -l \$TMPKUBECONFIG"
+            sh "kubectl apply -f deployment-react.yaml"
           }
         }
       }
