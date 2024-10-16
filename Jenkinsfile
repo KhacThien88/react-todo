@@ -83,7 +83,8 @@ pipeline {
           withCredentials([file(credentialsId: 'kube-config-admin', variable: 'TMPKUBECONFIG')]) {
             sh "cat \$TMPKUBECONFIG"
             sh "cp \$TMPKUBECONFIG ~/.kube/config"
-            sh "kubectl apply -f deployment.yaml"
+            sh "ls -l \$TMPKUBECONFIG"
+            sh "kubectl apply -f deployment-react.yaml"
           }
         }
       }
