@@ -78,6 +78,44 @@ pipeline {
         }
       }
     }
+    
+    stage('Create Deployment YAML') {
+      steps {
+        sh '''
+        cat <<EOF > /home/jenkins/agent/workspace/React_CICD_main/deployment-react.yaml
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: react-app-deployment
+          labels:
+            app: react-app
+        spec:
+          replicas: 2
+          selector:
+            matchLabels:
+              app: react-app
+          template:
+            metadata:
+              labels:
+                app: react-app
+            spec:
+              containers:
+              - name: react-app
+                image: ktei8htop15122004/react-todo:latest
+                ports:
+                - containerPort: 3000
+                resources:
+                  requests:
+                    memory: "128Mi"
+                    cpu: "250m"
+                  limits:
+                    memory: "512Mi"
+                    cpu: "500m"
+        EOF
+        '''
+      }
+    }
+
     stage('Deploying App to Kubernetes') {
       steps {
         container('kubectl') {
@@ -86,8 +124,7 @@ pipeline {
             sh "cp \$TMPKUBECONFIG ~/.kube/config"
             sh "ls -l \$TMPKUBECONFIG"
             sh "pwd"
-            sh "ls -l ~/home/vagrant/deployment-react.yaml"
-            sh "kubectl apply -f ~/home/vagrant/deployment-react.yaml"
+            sh "kubectl apply -f deployment-react.yaml"
           }
         }
       }
