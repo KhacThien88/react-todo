@@ -101,17 +101,17 @@ pipeline {
                 app: react-app
             spec:
               containers:
-                - name: react-app
-                  image: ktei8htop15122004/react-todo:latest
-                  ports:
-                    - containerPort: 3000
-                  resources:
-                    requests:
-                      memory: "128Mi"
-                      cpu: "250m"
-                    limits:
-                      memory: "512Mi"
-                      cpu: "500m"
+              - name: react-app
+                image: ktei8htop15122004/react-todo:latest
+                ports:
+                - containerPort: 3000
+                resources:
+                  requests:
+                    memory: "128Mi"
+                    cpu: "250m"
+                  limits:
+                    memory: "512Mi"
+                    cpu: "500m"
         EOF
         '''
       }
