@@ -112,6 +112,23 @@ spec:
     }
 }
 
+    stage('Create Service YAML') {
+    steps {
+        writeFile file: '/home/jenkins/agent/workspace/React_CICD_main/service-react.yaml', text: '''apiVersion: v1
+kind: Service
+metadata:
+  name: react-app-svc
+spec:
+  type: NodePort
+  selector:
+    app: react-app
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+      nodePort: 32200'''
+    }
+}
 
     stage('Deploying App to Kubernetes') {
       steps {
@@ -122,6 +139,7 @@ spec:
             sh "ls -l \$TMPKUBECONFIG"
             sh "pwd"
             sh "kubectl apply -f deployment-react.yaml"
+            sh "kubectl apply -f service-react.yaml"
           }
         }
       }
