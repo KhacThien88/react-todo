@@ -34,6 +34,8 @@ pipeline {
           - name: regcred
           command:
             - cat
+          securityContext:
+            runAsUser: 0
           tty: true
         volumes:
           - name: docker-sock
