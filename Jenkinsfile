@@ -17,8 +17,9 @@ pipeline {
             - 8.8.8.8
         containers:
         - name: docker
-          image: docker:latest
-          privileged: true
+          image: docker:19.03.12-dind
+          securityContext:
+            privileged: true
           imagePullSecrets:
             - name: regcred
           command:
