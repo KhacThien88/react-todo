@@ -3,7 +3,6 @@ pipeline {
     dockerimagename = "ktei8htop15122004/react-todo"
     dockerImage = ""
     DOCKERHUB_CREDENTIALS = credentials('dockerhub')
-    JAVA_OPTS = "-Dorg.jenkinsci.plugins.durabletask.BourneShellScript.LAUNCH_DIAGNOSTICS=true"  // Thêm dòng này
   }
 
   agent {
@@ -32,7 +31,10 @@ pipeline {
         - name: kubectl
           image: bitnami/kubectl:latest
           imagePullSecrets:
-          - name: regcred
+            - name: regcred
+          args:
+            - -u
+            - root
           command:
             - cat
           tty: true
@@ -81,11 +83,13 @@ pipeline {
     stage('Deploying App to Kubernetes') {
       steps {
         container('kubectl') {
-          withCredentials([file(credentialsId: 'kube-config-admin', variable: 'TMPKUBECONFIG')]) {
-            sh "cat \$TMPKUBECONFIG"
-            sh "cp \$TMPKUBECONFIG ~/.kube/config"
-            sh "ls -l \$TMPKUBECONFIG"
-            sh "kubectl apply -f deployment-react.yaml"
+          script {
+            withCredentials([file(credentialsId: 'kube-config-admin', variable: 'TMPKUBECONFIG')]) {
+              sh "cat \$TMPKUBECONFIG"
+              sh "cp \$TMPKUBECONFIG ~/.kube/config"
+              sh "ls -l \$TMPKUBECONFIG"
+              sh "kubectl apply -f deployment-react.yaml"
+            }
           }
         }
       }
