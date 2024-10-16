@@ -61,7 +61,7 @@ pipeline {
       steps {
         container('docker') {
           script {
-            sh 'docker build --network=host -t ktei8htop15122004/react-todo .'
+            sh 'docker build --network=host -t ${dockerimagename} .'
           }
         }
       }
@@ -72,8 +72,8 @@ pipeline {
         container('docker') {
           script {
             sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-            sh 'docker tag ktei8htop15122004/react-todo ktei8htop15122004/react-todo'
-            sh 'docker push ktei8htop15122004/react-todo:latest'
+            sh 'docker tag ${dockerimagename} ${dockerimagename}:latest'
+            sh 'docker push ${dockerimagename}:latest'
           }
         }
       }
@@ -81,50 +81,43 @@ pipeline {
     
     stage('Create Deployment YAML') {
       steps {
-        sh '''
-        cat <<EOF > /home/jenkins/agent/workspace/React_CICD_main/deployment-react.yaml
-        apiVersion: apps/v1
-        kind: Deployment
-        metadata:
-          name: react-app-deployment
-          labels:
-            app: react-app
-        spec:
-          replicas: 2
-          selector:
-            matchLabels:
-              app: react-app
-          template:
-            metadata:
-              labels:
-                app: react-app
-            spec:
-              containers:
-              - name: react-app
-                image: ktei8htop15122004/react-todo:latest
-                ports:
-                - containerPort: 3000
-                resources:
-                  requests:
-                    memory: "128Mi"
-                    cpu: "250m"
-                  limits:
-                    memory: "512Mi"
-                    cpu: "500m"
-        EOF
-        '''
+        writeFile file: '/home/jenkins/agent/workspace/React_CICD_main/deployment-react.yaml', text: '''apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react-app-deployment
+  labels:
+    app: react-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: react-app
+  template:
+    metadata:
+      labels:
+        app: react-app
+    spec:
+      containers:
+      - name: react-app
+        image: ${dockerimagename}:latest
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"'''
       }
     }
-
+    
     stage('Deploying App to Kubernetes') {
       steps {
         container('kubectl') {
           withCredentials([file(credentialsId: 'kube-config-admin', variable: 'TMPKUBECONFIG')]) {
-            sh "cat \$TMPKUBECONFIG"
             sh "cp \$TMPKUBECONFIG ~/.kube/config"
-            sh "ls -l \$TMPKUBECONFIG"
-            sh "pwd"
-            sh "kubectl apply -f deployment-react.yaml"
+            sh "kubectl apply -f /home/jenkins/agent/workspace/React_CICD_main/deployment-react.yaml"
           }
         }
       }
