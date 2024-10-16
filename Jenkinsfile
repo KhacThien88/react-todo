@@ -59,9 +59,6 @@ pipeline {
       steps {
         container('docker') {
           script {
-            sh 'docker --version'
-          }
-          script {
             sh 'docker build --network=host -t ktei8htop15122004/react-todo .'
           }
         }
