@@ -3,6 +3,7 @@ pipeline {
     dockerimagename = "ktei8htop15122004/react-todo"
     dockerImage = ""
     DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+    JAVA_OPTS = "-Dorg.jenkinsci.plugins.durabletask.BourneShellScript.LAUNCH_DIAGNOSTICS=true"  // Thêm dòng này
   }
 
   agent {
@@ -58,7 +59,6 @@ pipeline {
     stage('Build image') {
       steps {
         container('docker') {
-         
           script {
             sh 'docker build --network=host -t ktei8htop15122004/react-todo .'
           }
