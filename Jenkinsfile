@@ -18,6 +18,7 @@ pipeline {
         containers:
         - name: docker
           image: docker:latest
+          privileged: true
           imagePullSecrets:
             - name: regcred
           command:
