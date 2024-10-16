@@ -21,7 +21,9 @@ pipeline {
           imagePullSecrets:
             - name: regcred
           command:
-            - cat
+            - sh
+            - -c
+            - "while true; do sleep 10; done"
           tty: true
           securityContext:
             privileged: true
@@ -33,7 +35,9 @@ pipeline {
           imagePullSecrets:
             - name: regcred
           command:
-            - cat
+            - sh
+            - -c
+            - "while true; do sleep 10; done"
           tty: true
         volumes:
           - name: docker-sock
@@ -81,7 +85,6 @@ pipeline {
       steps {
         container('kubectl') {
           withCredentials([file(credentialsId: 'kube-config-admin', variable: 'TMPKUBECONFIG')]) {
-            sh "cat \$TMPKUBECONFIG"
             sh "kubectl --kubeconfig=\$TMPKUBECONFIG apply -f deployment-react.yaml"
           }
         }
