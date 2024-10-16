@@ -85,6 +85,7 @@ pipeline {
             sh "cat \$TMPKUBECONFIG"
             sh "cp \$TMPKUBECONFIG ~/.kube/config"
             sh "ls -l \$TMPKUBECONFIG"
+            sh "pwd"
             sh "kubectl apply -f /home/vagrant/deployment-react.yaml"
           }
         }
