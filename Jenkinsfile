@@ -18,6 +18,8 @@ pipeline {
         containers:
         - name: docker
           image: docker:latest
+          imagePullSecrets:
+            - name: regcred
           command:
             - cat
           tty: true
@@ -26,13 +28,13 @@ pipeline {
               name: docker-sock
         - name: kubectl
           image: bitnami/kubectl:latest
+          imagePullSecrets:
+          - name: regcred
           command:
             - cat
           tty: true
         securityContext:
-          runAsUser: 1000
-        imagePullSecrets:
-          - name: regcred
+          runAsUser: 0
         volumes:
           - name: docker-sock
             hostPath:
