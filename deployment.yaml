@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: react-app  # The name of the React.js application container
-          image: tindev0702/react-todo:latest # Docker image for building the React.js application
+          image: ktei8htop15122004/react-todo:latest # Docker image for building the React.js application
           ports:
             - containerPort: 3000  # Port on which the React.js application will be exposed
           resources:

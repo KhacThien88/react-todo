@@ -17,14 +17,14 @@ pipeline {
             - 8.8.8.8
         containers:
         - name: docker
-          image: docker:19.03.12-dind
-          securityContext:
-            privileged: true
+          image: docker:latest
           imagePullSecrets:
             - name: regcred
           command:
             - cat
           tty: true
+          securityContext:
+            privileged: true
           volumeMounts:
             - mountPath: /var/run/docker.sock
               name: docker-sock
@@ -35,8 +35,6 @@ pipeline {
           command:
             - cat
           tty: true
-        securityContext:
-          runAsUser: 0
         volumes:
           - name: docker-sock
             hostPath:
@@ -46,12 +44,6 @@ pipeline {
   }
 
   stages {
-    // stage('Checkout Source') {
-    //   steps {
-    //     checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: '']])
-    //   }
-    // }
-
     stage('Unit Test') {
       when {
         expression {
@@ -62,7 +54,7 @@ pipeline {
         sh 'echo Unit Test'
       }
     }
-    
+
     stage('Build image') {
       steps {
         container('docker') {
@@ -95,7 +87,6 @@ pipeline {
           }
         }
       }
-      // sh 'kubectl apply -f deployment.yaml'
     }
   }
 }
