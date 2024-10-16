@@ -78,7 +78,11 @@ pipeline {
         }
       }
     }
-
+    stage('Prepare Deployment File') {
+      steps {
+        sh 'cp /home/vagrant/deployment-react.yaml $WORKSPACE/'
+      }
+    }
     stage('Deploying App to Kubernetes') {
       steps {
         container('kubectl') {
@@ -86,7 +90,7 @@ pipeline {
             sh "cat \$TMPKUBECONFIG"
             sh "cp \$TMPKUBECONFIG ~/.kube/config"
             sh "ls -l \$TMPKUBECONFIG"
-            sh "kubectl apply -f deployment-react.yaml"
+            sh "kubectl apply -f /home/vagrant/deployment-react.yaml"
           }
         }
       }
