@@ -78,11 +78,6 @@ pipeline {
         }
       }
     }
-    stage('Prepare Deployment File') {
-      steps {
-        sh 'cp /home/vagrant/deployment-react.yaml $WORKSPACE/'
-      }
-    }
     stage('Deploying App to Kubernetes') {
       steps {
         container('kubectl') {
