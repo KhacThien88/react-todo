@@ -61,7 +61,7 @@ pipeline {
       steps {
         container('docker') {
           script {
-            sh 'docker build --network=host -t ${dockerimagename} .'
+            sh 'docker build --network=host -t ktei8htop15122004/react-todo .'
           }
         }
       }
@@ -72,15 +72,15 @@ pipeline {
         container('docker') {
           script {
             sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-            sh 'docker tag ${dockerimagename} ${dockerimagename}:latest'
-            sh 'docker push ${dockerimagename}:latest'
+            sh 'docker tag ktei8htop15122004/react-todo ktei8htop15122004/react-todo'
+            sh 'docker push ktei8htop15122004/react-todo:latest'
           }
         }
       }
     }
     
     stage('Create Deployment YAML') {
-      steps {
+    steps {
         writeFile file: '/home/jenkins/agent/workspace/React_CICD_main/deployment-react.yaml', text: '''apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -99,7 +99,7 @@ spec:
     spec:
       containers:
       - name: react-app
-        image: ${dockerimagename}:latest
+        image: ktei8htop15122004/react-todo:latest
         ports:
         - containerPort: 3000
         resources:
@@ -109,15 +109,19 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "500m"'''
-      }
     }
-    
+}
+
+
     stage('Deploying App to Kubernetes') {
       steps {
         container('kubectl') {
           withCredentials([file(credentialsId: 'kube-config-admin', variable: 'TMPKUBECONFIG')]) {
+            sh "cat \$TMPKUBECONFIG"
             sh "cp \$TMPKUBECONFIG ~/.kube/config"
-            sh "kubectl apply -f /home/jenkins/agent/workspace/React_CICD_main/deployment-react.yaml"
+            sh "ls -l \$TMPKUBECONFIG"
+            sh "pwd"
+            sh "kubectl apply -f deployment-react.yaml"
           }
         }
       }
